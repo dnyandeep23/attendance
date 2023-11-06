@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "271810739793",
+    "firebase_url": "https://attendance-go-default-rtdb.firebaseio.com",
+    "project_id": "attendance-go",
+    "storage_bucket": "attendance-go.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:271810739793:android:3910740a3b53c459d44270",
+        "android_client_info": {
+          "package_name": "com.example.attedance"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrNTv8Vcj4nTPz4kYewRlpfAIbYo8GX_8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
