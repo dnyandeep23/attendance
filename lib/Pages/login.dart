@@ -123,7 +123,7 @@ class _StudLoginState extends State<StudLogin> {
                       ),
                       Container(
                         width: screenWidth * 0.9,
-                        height: screenHeight * 0.5,
+                        height: screenHeight * 0.55,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
                             color: const Color.fromARGB(25, 217, 217, 217),
@@ -426,17 +426,17 @@ class _StudLoginState extends State<StudLogin> {
                 ),
               ),
               SizedBox(height: screenHeight * 0.01),
-              // TextButton(
-              //     onPressed: () {
-              //       // Navigator.push(context,
-              //       //     MaterialPageRoute(builder: ((context) => Phone())));
-              //       setState(() {
-              //         forget = true;
-              //         isTeach = false;
-              //       });
-              //     },
-              //     child: Text('Forget Password',
-              //         style: TextStyle(color: Colors.white)))
+              TextButton(
+                  onPressed: () {
+                    // Navigator.push(context,
+                    //     MaterialPageRoute(builder: ((context) => Phone(isteach: false,))));
+                    setState(() {
+                      forget = true;
+                      isTeach = false;
+                    });
+                  },
+                  child: Text('Forget Password',
+                      style: TextStyle(color: Colors.white)))
             ],
           ),
         ),
@@ -452,13 +452,11 @@ class _StudLoginState extends State<StudLogin> {
       String username = userStudController.text.toUpperCase().trim();
       String password = passStudController.text.trim();
       String imeidev = await DeviceInformation.deviceIMEINumber;
-      // Position position = await _getCurrentPosition();
-      // Position position = await _getCurrentPosition();
+ 
 
       try {
         DatabaseReference databaseRef =
             FirebaseDatabase.instance.ref().child('student');
-        // print("Hello");
 
         DataSnapshot userSnapshot;
         // Check if the user already exists in the database
@@ -586,12 +584,7 @@ class _StudLoginState extends State<StudLogin> {
             });
           }
         });
-        //
-        // Optionally, you can show a success message or navigate to another screen.
-        // For example:
-        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        //   content: Text('Data saved successfully!'),
-        // ));
+      
       } catch (e) {
         print('Error storing data: $e');
       }
@@ -868,16 +861,22 @@ class _StudLoginState extends State<StudLogin> {
                   ),
                 ),
               ),
-              // SizedBox(height: screenHeight * 0.01),
-              // TextButton(
-              //     onPressed: () {
-              //       setState(() {
-              //         forget = true;
-              //         isTeach = true;
-              //       });
-              //     },
-              //     child: Text('Forget Password',
-              //         style: TextStyle(color: Colors.white)))
+              SizedBox(height: screenHeight * 0.01),
+              TextButton(
+                  onPressed: () {
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: ((context) => Phone(
+                    //               isteach: true,
+                    //             ))));
+                    setState(() {
+                      forget = true;
+                      isTeach = true;
+                    });
+                  },
+                  child: Text('Forget Password',
+                      style: TextStyle(color: Colors.white)))
             ],
           ),
         ),

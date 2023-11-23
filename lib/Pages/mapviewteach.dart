@@ -1,7 +1,6 @@
 // ignore_for_file: avoid_print, unused_local_variable, avoid_function_literals_in_foreach_calls
 
 import 'dart:async';
-import 'dart:ffi';
 import 'dart:math';
 import 'package:attedance/Pages/teachverify.dart';
 import 'package:attedance/Utils/attendanceModel.dart';
@@ -179,13 +178,7 @@ class _MapViewStateTeach extends State<MapViewTeach> {
             print(studData['studentId']);
           }
         });
-        // print("Hello :$studList");
-
-        // String name = studDataLoc.studentId;
-        // print('name :' + name);
-        // LatLng lat = new LatLng(studDataLoc.latitude, studDataLoc.longitude);
-        // print('LatLng :' + lat.toString());
-        // checkUserInLoc(lat, name);
+       
 
         absentList.clear();
         presentList.clear();
@@ -255,12 +248,12 @@ class _MapViewStateTeach extends State<MapViewTeach> {
   Future<void> _setLoc() async {
     try {
       Position position = await _getCurrentPosition();
-
       // ignore: unnecessary_null_comparison
       setState(() {
         oldCurrentLoc = currentLoc;
         currentLoc = LatLng(position.latitude, position.longitude);
       });
+      // ignore: unnecessary_null_comparison
       if (position != null) {
         userLatitude = position.latitude;
         userLongitude = position.longitude;
@@ -286,7 +279,7 @@ class _MapViewStateTeach extends State<MapViewTeach> {
               circleId: const CircleId('1'),
               radius: radiusValue,
               strokeWidth: 2,
-              fillColor: Color.fromARGB(255, 184, 255, 140),
+              fillColor: const Color.fromARGB(255, 184, 255, 140),
               center: LatLng(position.latitude, position.longitude));
           _circles["circle"] = updatedCircle;
         });
@@ -987,12 +980,6 @@ class _MapViewStateTeach extends State<MapViewTeach> {
         }
       }
 
-      // print("present: $presentlist");
-
-      // if (presentList.contains(name)) {
-      //   print('Removing $name from presentList');
-      //   presentList.remove(name);
-      // }
     }
   }
 
@@ -1068,9 +1055,4 @@ class _MapViewStateTeach extends State<MapViewTeach> {
       },
     );
   }
-
-  // void _showSideSheet(
-  //   double screenHeight, double screenWidth) {
-  //   double bottomSheetHeight = MediaQuery.of(context).size.height * 0.81;
-  // }
 }

@@ -59,7 +59,6 @@ class _MyPageState extends State<MyPage> {
     updateTimer();
     Timer(Duration(seconds: _timer), () {
       Navigator.pop(context);
-    
     });
   }
 
@@ -223,7 +222,7 @@ class _MyPageState extends State<MyPage> {
                           borderRadius: BorderRadius.circular(100)),
                       child: Text(
                         '$num2',
-                        style: TextStyle(
+                        style:const TextStyle(
                             color: Color.fromARGB(255, 255, 255, 255),
                             fontFamily: 'poppinsBold',
                             fontSize: 60),
@@ -303,6 +302,7 @@ class _MyPageState extends State<MyPage> {
 
     DataSnapshot dataSnapshot;
     DataSnapshot snapshot;
+
     await dataStud
         .child(username)
         .once()
@@ -320,6 +320,11 @@ class _MyPageState extends State<MyPage> {
               .child(code)
               .child('Stud_att')
               .child(date)
+              .update({"date": date});
+          databaseRef
+              .child(code)
+              .child('Stud_att')
+              .child(date)
               .child('Present')
               .child(username)
               .update({
@@ -329,7 +334,7 @@ class _MyPageState extends State<MyPage> {
             'status': 'Present',
           });
 
-         databaseRef
+          databaseRef
               .child(code)
               .child('Stud_Ratio')
               .child(username)
@@ -352,44 +357,18 @@ class _MyPageState extends State<MyPage> {
 
             // Update the data
             databaseRef.child(code).child('Stud_Ratio').child(username).update({
-              'Present': present+1,
+              'Present': present + 1,
               'Absent': absent,
             });
           });
 
-
-          // await piereadRef
-          //     .child(code)
-          //     .child('Stud_Ratio')
-          //     .child(username)
-          //     .once()
-          //     .then((DatabaseEvent dataEvent) async {
-          //   try {
-          //     snapshot = dataEvent.snapshot;
-          //     Map<dynamic, dynamic>? studInfo = snapshot.value as Map?;
-          //     present = studInfo!['Present'];
-          //     absent = studInfo['Absent'];
-          //     // ignore: unnecessary_null_comparison
-          //     if (studInfo == null) {
-          //       print("Entered");
-          //       pieRef.child(code).child('Stud_Ratio').child(username).update({
-          //         'Present': 1,
-          //         'Absent': 0,
-          //       });
-          //     } else {
-          //       print("Entered 2");
-          //       pieRef.child(code).child('Stud_Ratio').child(username).update({
-          //         'Present': present + 1,
-          //         'Absent': absent,
-          //       });
-          //     }
-          //   } catch (error) {
-          //     print("Error: $error");
-          //   }
-          // });
-
           Navigator.pop(context);
         } else {
+          databaseRef
+              .child(code)
+              .child('Stud_att')
+              .child(date)
+              .update({"date": date});
           databaseRef
               .child(code)
               .child('Stud_att')
@@ -403,32 +382,33 @@ class _MyPageState extends State<MyPage> {
             'status': 'Absent',
           });
 
-          // piereadRef
-          //     .child(code)
-          //     .child('Stud_Ratio')
-          //     .child(username)
-          //     .once()
-          //     .then((DatabaseEvent dataEvent) async {
-          //   snapshot = dataEvent.snapshot;
-          //   Map<dynamic, dynamic>? studInfo = snapshot.value as Map?;
-          //   present = studInfo!['Present'];
-          //   absent = studInfo['Absent'];
-          //   // ignore: unnecessary_null_comparison
-          //   if (studInfo == null) {
-          //     print("Enterd33");
-          //     pieRef.child(code).child('Stud_Ratio').child(username).update({
+          databaseRef
+              .child(code)
+              .child('Stud_Ratio')
+              .child(username)
+              .once()
+              .then((DatabaseEvent dataEvent) async {
+            snapshot = dataEvent.snapshot;
 
-          //       'Present': 0,
-          //       'Absent': 1,
-          //     });
-          //   } else {
-          //     print("Enterd4");
-          //     pieRef.child(code).child('Stud_Ratio').child(username).update({
-          //       'Present': present,
-          //       'Absent': absent + 1,
-          //     });
-          //   }
-          // });
+            if (snapshot.value != null && snapshot.exists) {
+              // Data is present
+              Map<dynamic, dynamic>? studInfo = snapshot.value as Map?;
+              present = studInfo?['Present'] ?? 0;
+              absent = studInfo?['Absent'] ?? 0;
+              print("Entered");
+            } else {
+              // Data is not present
+              present = 0;
+              absent = 1;
+              print("Closed");
+            }
+
+            // Update the data
+            databaseRef.child(code).child('Stud_Ratio').child(username).update({
+              'Present': present,
+              'Absent': absent + 1,
+            });
+          });
           print("false");
           Navigator.pop(context);
         }

@@ -1,7 +1,14 @@
 // ignore_for_file: unused_import, file_names, no_logic_in_create_state, duplicate_ignore
 
+import 'dart:io';
+
+import 'package:attedance/Utils/read_excel.dart';
+import 'package:dotted_border/dotted_border.dart';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_list.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:attedance/Utils/header.dart';
@@ -23,6 +30,8 @@ class _TeachaddStudState extends State<TeachaddStud> {
   final String courseName;
   _TeachaddStudState({required this.code, required this.courseName});
 
+  ///File? _pickedFile;
+  //bool filepicked = false;
   final _formKey = GlobalKey<FormState>();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
@@ -42,7 +51,10 @@ class _TeachaddStudState extends State<TeachaddStud> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Header(screenHeight: screenHeight, screenWidth: screenWidth,isStud: false),
+            Header(
+                screenHeight: screenHeight,
+                screenWidth: screenWidth,
+                isStud: false),
             SizedBox(height: MediaQuery.of(context).size.height * 0.02),
             Center(
               child: Container(
@@ -311,6 +323,7 @@ class _TeachaddStudState extends State<TeachaddStud> {
                         ),
                         SizedBox(
                             height: MediaQuery.of(context).size.height * 0.05),
+                        ReadExcel(screenWidth:screenWidth, screenHeight:screenHeight,code:code,courseName:courseName)
                       ],
                     ),
                   )),
@@ -320,6 +333,8 @@ class _TeachaddStudState extends State<TeachaddStud> {
       ),
     );
   }
+
+  
 
   void handleSubmit() async {
     if (_formKey.currentState!.validate()) {
@@ -364,8 +379,8 @@ class _TeachaddStudState extends State<TeachaddStud> {
         }
       });
 
-      if(exsits == false){
-try {
+      if (exsits == false) {
+        try {
           print(code);
           databaseRef.child(enrol).update({
             'Mobile': mob,
@@ -406,7 +421,6 @@ try {
           });
         }
       }
-      
     }
   }
 }

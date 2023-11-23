@@ -1,5 +1,8 @@
 import 'package:attedance/Pages/admin.dart';
+import 'package:attedance/Pages/course.dart';
+import 'package:attedance/Pages/courseteach.dart';
 import 'package:attedance/Pages/feedback.dart';
+import 'package:attedance/Pages/downloadattend.dart';
 import 'package:attedance/Pages/profile.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -37,6 +40,9 @@ class _MyDrawerState extends State<MyDrawer> {
   String name = "";
   String email = "";
   String mob = "";
+  String image = "";
+  String altimage =
+      "https://firebasestorage.googleapis.com/v0/b/attendance-go.appspot.com/o/images%2Fdefault.png?alt=media&token=178d8b2f-38de-416d-9ea5-5b4b027eb046";
 
   void _changeEmailColor() {
     setState(() {
@@ -128,11 +134,13 @@ class _MyDrawerState extends State<MyDrawer> {
           String lname = teachData['lastName'];
           String emailid = teachData['Email'];
           String mobile = teachData['Mobile'];
+          String imageData = teachData['image'] ?? '';
 
           setState(() {
             name = "$fname $lname";
             email = emailid;
             mob = mobile;
+            image = imageData;
           });
         }
       });
@@ -153,11 +161,12 @@ class _MyDrawerState extends State<MyDrawer> {
           String lname = studData['lastName'] ?? '';
           String emailid = studData['Email'] ?? '';
           String mobile = studData['Mobile'] ?? '';
-
+          String imageData = studData['image'] ?? '';
           setState(() {
             name = "$fname $lname";
             email = emailid;
             mob = mobile;
+            image = imageData;
           });
         }
       });
@@ -185,10 +194,25 @@ class _MyDrawerState extends State<MyDrawer> {
               child: UserAccountsDrawerHeader(
                 margin: EdgeInsets.zero,
                 currentAccountPicture: Container(
-                    padding: EdgeInsets.only(bottom: 10),
-                    child: Hero(
-                        tag: 'icon',
-                        child: Image.asset('assets/images/icon.png'))),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white, width: 1),
+                      borderRadius: BorderRadius.circular(100)),
+                  padding: EdgeInsets.all(4),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100)),
+                        child: Hero(
+                            tag: 'icon',
+                            child: Image.network(
+                              image.isEmpty ? altimage : image,
+                              fit: BoxFit.fill,
+                            ))),
+                  ),
+                ),
+                currentAccountPictureSize: const Size(60, 60),
                 accountName: Text(
                   "$name",
                   style: const TextStyle(color: Colors.white),
@@ -235,7 +259,20 @@ class _MyDrawerState extends State<MyDrawer> {
                 hoverColor: Colors.grey,
                 onTap: () {
                   _changeHomeColor();
-                  Navigator.of(context).pop(true);
+                  isteach
+                      ? Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => TeachCourse(
+                            username: username,
+                            name: name,
+                            approved: true,
+                          ),
+                        ))
+                      : Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => StudCourse(
+                            username: username,
+                            name: name,
+                          ),
+                        ));
                 },
                 // Adjust padding as needed
               ),
@@ -270,6 +307,7 @@ class _MyDrawerState extends State<MyDrawer> {
                     builder: (context) => Profile(
                       username: username,
                       isteach: isteach,
+                      show_update: false,
                     ),
                   ));
                 },
@@ -305,6 +343,8 @@ class _MyDrawerState extends State<MyDrawer> {
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
                     builder: (context) => FeedbackWidget(
                       username: username,
+                      student: student,
+                      isteach: isteach,
                     ),
                   ));
                 },
@@ -336,6 +376,43 @@ class _MyDrawerState extends State<MyDrawer> {
                         _changeAdminColor();
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
                           builder: (context) => Admin(username: username),
+                        ));
+                      },
+                    ),
+                  )
+                : SizedBox(),
+            const SizedBox(
+              height: 10,
+            ),
+            isteach
+                ? Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                          10.0), // Adjust the radius as needed
+                      border: Border.all(
+                        color: docColor, // Border color
+                        width: 1.0, // Border width
+                      ),
+                    ),
+                    child: ListTile(
+                      leading: const Icon(
+                        CupertinoIcons.square_list,
+                        color: Colors.white,
+                      ),
+                      // tileColor: emailColor,
+                      title: const Text(
+                        "Download Attendance",
+                        textScaleFactor: 1.2,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      hoverColor: Colors.grey,
+                      onTap: () {
+                        _changeDocColor();
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => DownloadAttendance(
+                            isStud: !isteach,
+                            username: username,
+                          ),
                         ));
                       },
                     ),

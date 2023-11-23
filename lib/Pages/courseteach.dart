@@ -1,12 +1,8 @@
 // ignore_for_file: avoid_print
 
-import 'dart:async';
-import 'dart:ffi';
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:attedance/Pages/mapview.dart';
-import 'package:attedance/Pages/mapviewteach.dart';
 import 'package:attedance/Pages/teacherStudDetail.dart';
 import 'package:attedance/Utils/drawer.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -128,7 +124,10 @@ class _StudCourseState extends State<TeachCourse> {
       key: scaffoldMessengerKey,
       backgroundColor: Colors.transparent,
       body: Column(children: [
-        Header(screenHeight: screenHeight, screenWidth: screenWidth,isStud: false),
+        Header(
+            screenHeight: screenHeight,
+            screenWidth: screenWidth,
+            isStud: false),
         SizedBox(
           height: screenHeight * 0.03,
         ),
@@ -155,7 +154,7 @@ class _StudCourseState extends State<TeachCourse> {
                 ),
                 Container(
                   width: screenWidth * 0.9,
-                  height: screenHeight * 0.82,
+                  height: screenHeight * 0.83,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       color: const Color.fromARGB(13, 217, 217, 217),
@@ -171,7 +170,7 @@ class _StudCourseState extends State<TeachCourse> {
                           ),
                           Container(
                             width: screenWidth * 0.52,
-                            height: screenHeight * 0.065,
+                            height: screenHeight * 0.075,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -281,12 +280,11 @@ class _StudCourseState extends State<TeachCourse> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => TeachStudDetails(
-                                          name: name,
-                                          username: username,
-                                          code: coursesCode[index],
-                                          approved: approved,
-                                          courseName: course[index]
-                                        ),
+                                            name: name,
+                                            username: username,
+                                            code: coursesCode[index],
+                                            approved: approved,
+                                            courseName: course[index]),
                                       ),
                                     );
                                     // Navigator.pushNamed(

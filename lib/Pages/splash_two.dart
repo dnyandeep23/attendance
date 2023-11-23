@@ -46,7 +46,6 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
 
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        // Animation has completed, update the state here
         setState(() {
           click = true;
         });

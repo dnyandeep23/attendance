@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
 import 'package:attedance/Utils/attendanceModel.dart';
 import 'package:attedance/Utils/customToast.dart';
@@ -13,8 +12,7 @@ Future<void> exportStudentsToExcel(
   DateTime now = DateTime.now();
   String date =
       "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
-  sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: 1)).value =
-  '$date';
+  sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: 1)).value =date;
   // Add headers
   sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: 2)).value =
       'Enrollment Number';
@@ -25,7 +23,6 @@ Future<void> exportStudentsToExcel(
   sheet.cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: 2)).value =
       'Status';
 
-  // Add student data
   for (int i = 1; i < students.length; i++) {
     var student = students[i];
     sheet
@@ -55,10 +52,8 @@ Future<void> exportStudentsToExcel(
 
     CustomToast(message: "$fileName/$fileName", screenwidth: screenWidth);
 
-    // ignore: avoid_print
-    print('Excel file saved to: $filepath');
+
   } else {
-    // ignore: avoid_print
-    print('Failed to access the download folder.');
+
   }
 }

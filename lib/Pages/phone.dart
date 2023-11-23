@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:attedance/Pages/changepassword.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -19,7 +20,7 @@ class Phone extends StatefulWidget {
 
 class _PhoneState extends State<Phone> {
   bool isError = false;
-
+  late String user;
   final GlobalKey<FormState> key = GlobalKey<FormState>();
 
   // final TextEditingController mobTeach = TextEditingController();
@@ -32,6 +33,9 @@ class _PhoneState extends State<Phone> {
   _PhoneState(this.isteach);
   final bool isteach;
   final bool validate = false;
+  String message = "";
+  bool iserr = false;
+  String verify = '';
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -197,6 +201,7 @@ class _PhoneState extends State<Phone> {
                       margin: EdgeInsets.symmetric(horizontal: 5),
                       child: TextFormField(
                         controller: _controllers[index],
+                        style:TextStyle(color:Colors.white),
                         keyboardType: TextInputType.number,
                         maxLength: 1,
                         decoration: InputDecoration(
@@ -243,53 +248,109 @@ class _PhoneState extends State<Phone> {
     FirebaseAuth _auth = FirebaseAuth.instance;
 
     // Replace 'phoneNumber' with the user's phone number in international format (e.g., +1 123-456-7890).
-    String phoneNumber = '+918097228253';
-
     try {
-      await _auth.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
-        verificationCompleted: (PhoneAuthCredential credential) {
-          // This callback is triggered automatically on some Android devices.
-          // You can sign in the user here.
-        },
-        verificationFailed: (FirebaseAuthException e) {
-          print("Failed to send OTP: ${e.message}");
-        },
-        codeSent: (String verificationId, int? resendToken) {
-          // Store the verification ID for later use (usually in a state management solution).
-          // You'll need to send this ID back when the user enters the OTP.
-          print("Verification ID: $verificationId");
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {
-          // Called when the OTP code auto-retrieval timeout.
-        },
-      );
+      setState(() {
+        message = '';
+        iserr = false;
+      });
+      String smsCode = _controllers.fold(
+          '', (previous, controller) => previous + controller.text);
+
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+          verificationId: verify, smsCode: smsCode);
+
+      // Sign the user in (or link) with the credential
+      await _auth.signInWithCredential(credential);
+
+      if (isteach == true) {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => Changepassword(
+            isteach: isteach,
+            username: user,
+          ),
+        ));
+      } else {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => Changepassword(
+            isteach: isteach,
+            username: user,
+          ),
+        ));
+      }
     } catch (e) {
-      print("Failed to send OTP: $e");
+      print('Failed to sign in: $e');
+      setState(() {
+        message = "Invalid OTP";
+        iserr = true;
+      });
     }
   }
 
   void validatenumber(bool isteach) async {
-    String user = userController.text.toUpperCase();
-    DatabaseReference databaseRef =
-        FirebaseDatabase.instance.ref().child('student');
-    DataSnapshot userSnapshot;
-    // Check if the user already exists in the database
-    await databaseRef
-        .child(user)
-        .once()
-        .then((DatabaseEvent databaseEvent) async {
-      userSnapshot = databaseEvent.snapshot;
+    user = userController.text.toUpperCase();
 
-      if (userSnapshot.value != null) {
-        Map<dynamic, dynamic>? userData = userSnapshot.value as Map?;
-        if (userData != null && userData.containsKey('Mobile')) {
-          String storedMob = userData['Mobile'].toString();
-          setState(() {
-            mob = storedMob;
-          });
+    print("Enter");
+    if (isteach == true) {
+      DatabaseReference databaseRef =
+          FirebaseDatabase.instance.ref().child('teacher');
+      DataSnapshot userSnapshot;
+      await databaseRef
+          .child(user)
+          .once()
+          .then((DatabaseEvent databaseEvent) async {
+        userSnapshot = databaseEvent.snapshot;
+
+        if (userSnapshot.value != null) {
+          Map<dynamic, dynamic>? userData = userSnapshot.value as Map?;
+          if (userData != null && userData.containsKey('Mobile')) {
+            String storedMob = userData['Mobile'].toString();
+            setState(() {
+              mob = storedMob;
+              print(mob);
+            });
+
+            FirebaseAuth.instance.verifyPhoneNumber(
+              phoneNumber: '+91$storedMob',
+              verificationCompleted: (PhoneAuthCredential credential) {},
+              verificationFailed: (FirebaseAuthException e) {},
+              codeSent: (String verificationId, int? resendToken) {
+                verify = verificationId;
+              },
+              codeAutoRetrievalTimeout: (String verificationId) {},
+            );
+          }
         }
-      }
-    });
+      });
+    } else {
+      DatabaseReference databaseRef =
+          FirebaseDatabase.instance.ref().child('student');
+      DataSnapshot userSnapshot;
+      await databaseRef
+          .child(user)
+          .once()
+          .then((DatabaseEvent databaseEvent) async {
+        userSnapshot = databaseEvent.snapshot;
+
+        if (userSnapshot.value != null) {
+          Map<dynamic, dynamic>? userData = userSnapshot.value as Map?;
+          if (userData != null && userData.containsKey('Mobile')) {
+            String storedMob = userData['Mobile'].toString();
+            setState(() {
+              mob = storedMob;
+              print(mob);
+            });
+            FirebaseAuth.instance.verifyPhoneNumber(
+              phoneNumber: '+91$storedMob',
+              verificationCompleted: (PhoneAuthCredential credential) {},
+              verificationFailed: (FirebaseAuthException e) {},
+              codeSent: (String verificationId, int? resendToken) {
+                verify = verificationId;
+              },
+              codeAutoRetrievalTimeout: (String verificationId) {},
+            );
+          }
+        }
+      });
+    }
   }
 }

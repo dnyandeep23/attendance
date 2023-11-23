@@ -9,6 +9,7 @@ import 'package:attedance/Pages/teacherStudDetail.dart';
 import 'package:attedance/Pages/verification.dart';
 import 'package:attedance/Utils/background.dart';
 import 'package:attedance/Utils/firebase_api.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,15 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  try {
+    await FirebaseAppCheck.instance
+        .activate(androidProvider: AndroidProvider.playIntegrity);
+    await FirebaseAppCheck.instance.getToken(true);
+  } catch (e) {
+    print(e);
+  }
+
   await FirebaseApi(navigatorKey).initNotification();
   await initializeService(username: 'FH21CO003');
   runApp(const MyApp());
@@ -64,7 +74,14 @@ class MyApp extends StatelessWidget {
                 courseName: '',
               ),
           '/mypage': (context) => const MyPage(
-              attendance: false, num1: 0, num2: 0, num3: 0, res: 0, timer: 0,username:'',code:''),
+              attendance: false,
+              num1: 0,
+              num2: 0,
+              num3: 0,
+              res: 0,
+              timer: 0,
+              username: '',
+              code: ''),
         });
   }
 }
@@ -110,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-    Future<void> requestPermissions() async {
+  Future<void> requestPermissions() async {
     final permissions = [
       Permission.phone,
       Permission.mediaLibrary,
@@ -211,9 +228,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _requestBackgroundLocationPermission() async {
     final status = await Permission.locationAlways.request();
-    if (status.isGranted) {}
-    else if (status.isDenied) {}
-    else if (status.isPermanentlyDenied) {
+    if (status.isGranted) {
+    } else if (status.isDenied) {
+    } else if (status.isPermanentlyDenied) {
       openAppSettings();
     }
   }

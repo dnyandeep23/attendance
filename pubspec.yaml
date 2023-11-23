@@ -47,12 +47,16 @@ dependencies:
   firebase_messaging: ^14.7.0
   http: ^1.1.0
   timer_count_down: ^2.2.0
-  file_picker: ^6.0.0
   imei: ^0.0.1
   device_information: ^0.0.4
   firebase_auth: ^4.11.1
   pie_chart: ^5.3.2
   fl_chart: ^0.64.0
+  dotted_border: ^2.1.0
+  file_picker: ^6.1.1
+  image_picker: ^1.0.4
+  firebase_storage: ^11.4.1
+  firebase_app_check: ^0.2.1+4
 
 dev_dependencies:
   flutter_test:

@@ -86,7 +86,10 @@ class _RegisterState extends State<Register> {
           Container(
               color: Colors.transparent,
               child: Column(children: [
-                Header(screenHeight: screenHeight, screenWidth: screenWidth,isStud:true),
+                Header(
+                    screenHeight: screenHeight,
+                    screenWidth: screenWidth,
+                    isStud: true),
                 Column(children: [
                   SizedBox(
                     height: screenHeight * 0.03,
@@ -526,6 +529,7 @@ class _RegisterState extends State<Register> {
               ),
               TextFormField(
                 controller: mobStud,
+                keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     setState(() {
@@ -1205,6 +1209,7 @@ class _RegisterState extends State<Register> {
               ),
               TextFormField(
                 controller: mobTeach,
+                keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     setState(() {

@@ -51,6 +51,8 @@ class _TeachstudentdataState extends State<Teachstudentdata> {
   String last = "";
   String enrolmentNo = "";
 
+  bool p = false;
+
   final dataMap = <String, double>{
     "Present": 0,
     "Absent": 0,
@@ -77,10 +79,6 @@ class _TeachstudentdataState extends State<Teachstudentdata> {
   }
 
   void handleSearch(String query) {
-    // setState(() {
-    //   record = true;
-    // });
-
     bool enrollment = false;
     bool firstname = false;
     bool lastname = false;
@@ -125,11 +123,11 @@ class _TeachstudentdataState extends State<Teachstudentdata> {
     importData(code, enroll[new_index]);
     print(dataMap);
 
-    // if (enrollment && firstname && lastname) {
-    //   setState(() {
-    //     record = false;
-    //   });
-    // }
+    if (enrollment && firstname && lastname) {
+      setState(() {
+        record = false;
+      });
+    }
   }
 
   void importData(String code, String username) async {
@@ -165,6 +163,135 @@ class _TeachstudentdataState extends State<Teachstudentdata> {
     });
   }
 
+  void checkData() async {
+    DateTime now = DateTime.now();
+    String date =
+        "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+
+    DatabaseReference dataStud =
+        FirebaseDatabase.instance.ref().child('student');
+
+    DatabaseReference databaseRef =
+        FirebaseDatabase.instance.ref().child('course_codes');
+
+    String fname;
+    String lname;
+
+    int present;
+    int absent;
+
+    DataSnapshot dataSnapshot;
+    DataSnapshot snapshot;
+    await dataStud
+        .child(enrolmentNo)
+        .once()
+        .then((DatabaseEvent databaseEvent) async {
+      dataSnapshot = databaseEvent.snapshot;
+
+      Map<dynamic, dynamic>? data = dataSnapshot.value as Map?;
+      if (data != null) {
+        fname = data['firstName'];
+        lname = data['lastName'];
+
+        if (p == true) {
+          print("Done");
+          databaseRef
+              .child(code)
+              .child('Stud_att')
+              .child(date)
+              .child('Present')
+              .child(enrolmentNo)
+              .update({
+            "EnrollmentNo": enrolmentNo,
+            "FirstName": fname,
+            "LastName": lname,
+            'status': 'Present',
+          });
+
+          databaseRef
+              .child(code)
+              .child('Stud_Ratio')
+              .child(enrolmentNo)
+              .once()
+              .then((DatabaseEvent dataEvent) async {
+            snapshot = dataEvent.snapshot;
+
+            if (snapshot.value != null && snapshot.exists) {
+              // Data is present
+              Map<dynamic, dynamic>? studInfo = snapshot.value as Map?;
+              present = studInfo?['Present'] ?? 0;
+              absent = studInfo?['Absent'] ?? 0;
+              print("Entered");
+            } else {
+              // Data is not present
+              present = 1;
+              absent = 0;
+              print("Closed");
+            }
+
+            // Update the data
+            databaseRef
+                .child(code)
+                .child('Stud_Ratio')
+                .child(enrolmentNo)
+                .update({
+              'Present': present + 1,
+              'Absent': absent,
+            });
+          });
+          importData(code, enrolmentNo);
+        } else {
+          databaseRef
+              .child(code)
+              .child('Stud_att')
+              .child(date)
+              .child('Absent')
+              .child(enrolmentNo)
+              .update({
+            "EnrollmentNo": enrolmentNo,
+            "FirstName": fname,
+            "LastName": lname,
+            'status': 'Absent',
+          });
+
+          databaseRef
+              .child(code)
+              .child('Stud_Ratio')
+              .child(enrolmentNo)
+              .once()
+              .then((DatabaseEvent dataEvent) async {
+            snapshot = dataEvent.snapshot;
+
+            if (snapshot.value != null && snapshot.exists) {
+              // Data is present
+              Map<dynamic, dynamic>? studInfo = snapshot.value as Map?;
+              present = studInfo?['Present'] ?? 0;
+              absent = studInfo?['Absent'] ?? 0;
+              print("Entered");
+            } else {
+              // Data is not present
+              present = 0;
+              absent = 1;
+              print("Closed");
+            }
+
+            // Update the data
+            databaseRef
+                .child(code)
+                .child('Stud_Ratio')
+                .child(enrolmentNo)
+                .update({
+              'Present': present,
+              'Absent': absent + 1,
+            });
+          });
+          print("false");
+          importData(code, enrolmentNo);
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -173,7 +300,10 @@ class _TeachstudentdataState extends State<Teachstudentdata> {
         backgroundColor: Colors.transparent,
         body: SingleChildScrollView(
           child: Column(children: [
-            Header(screenHeight: screenHeight, screenWidth: screenWidth,isStud: true),
+            Header(
+                screenHeight: screenHeight,
+                screenWidth: screenWidth,
+                isStud: true),
             Container(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -363,6 +493,87 @@ class _TeachstudentdataState extends State<Teachstudentdata> {
                           )
                         ],
                       )
+                    ],
+                  )
+                ],
+              ),
+            ),
+            Container(
+              // alignment: Alignment.center,
+              width: screenWidth * 0.97,
+              height: screenHeight * 0.4,
+              margin: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Color(0xFFB3B0B0),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: screenHeight * 0.03,
+                  ),
+                  Text(
+                    "MARK ATTENDANCE \nMANUALLY",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 35,
+                        fontFamily: 'postnobillbold'),
+                  ),
+                  SizedBox(
+                    height: screenHeight * 0.01,
+                  ),
+                  Divider(
+                    color: Colors.black,
+                  ),
+                  SizedBox(
+                    height: screenHeight * 0.03,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              p = true;
+                            });
+                            checkData();
+                          },
+                          style: const ButtonStyle(
+                              backgroundColor: MaterialStatePropertyAll(
+                                  Color.fromARGB(255, 92, 212, 0)),
+                              side: MaterialStatePropertyAll(
+                                  BorderSide(color: Colors.white, width: 2))),
+                          child: Text(
+                            "Present",
+                            style: TextStyle(
+                                color: const Color.fromARGB(255, 205, 204, 204),
+                                fontSize: 22,
+                                fontFamily: 'poppinsBold'),
+                          )),
+                      SizedBox(
+                        width: screenWidth * 0.05,
+                      ),
+                      ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              p = false;
+                            });
+                            checkData();
+                          },
+                          clipBehavior: Clip.hardEdge,
+                          style: const ButtonStyle(
+                              backgroundColor: MaterialStatePropertyAll(
+                                  Color.fromARGB(255, 212, 15, 0)),
+                              side: MaterialStatePropertyAll(
+                                  BorderSide(color: Colors.white, width: 2))),
+                          child: const Text(
+                            "Absent",
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 212, 209, 209),
+                                fontSize: 22,
+                                fontFamily: 'poppinsBold'),
+                          )),
                     ],
                   )
                 ],
